@@ -2,6 +2,7 @@ import express from "express";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { chat } from "./agent.js";
+import { handleMcpRequest } from "./mcp-server.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -33,6 +34,9 @@ app.post("/api/chat", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// Rota MCP — compatível com qualquer cliente MCP (Claude Desktop, Claude Code, Ligia Pro)
+app.all("/mcp", handleMcpRequest);
 
 app.post("/api/reset", (req, res) => {
   const { session_id } = req.body;
