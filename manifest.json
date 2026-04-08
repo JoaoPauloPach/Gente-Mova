@@ -1,0 +1,188 @@
+{
+  "name": "mova_agent",
+  "version": "1.0.0",
+  "description": "Agente de orquestração de movimentações de pessoal. Permite solicitação, validação e aprovação de movimentações individuais e em massa via linguagem natural, com cálculo de impacto orçamentário e integração com posições e R&S.",
+  "product_base": "Gen.te Flui — Workflow Personalizado / Ligia Pro",
+  "clients_base": ["Hapvida Notre Dame Intermédica", "Deloitte"],
+  "data_sources": {
+    "employees": "mock_data.json → employees",
+    "positions": "mock_data.json → positions",
+    "salary_tables": "mock_data.json → salary_tables",
+    "movement_policies": "mock_data.json → movement_policies",
+    "workflow_approvers": "mock_data.json → workflow_approvers",
+    "pending_movements": "mock_data.json → pending_movements",
+    "rs_requisitions": "mock_data.json → rs_requisitions",
+    "budget": "mock_data.json → budget"
+  },
+  "constraints": {
+    "budget_integration": "CALCULATED_FROM_PAYROLL",
+    "rs_integration": "FLAG_AND_QUERY",
+    "position_type_enforced": "1to1_only",
+    "salary_alert_mode": "WARNING_NOT_BLOCKING",
+    "submission_mode": "INDIVIDUAL_PER_EMPLOYEE"
+  },
+  "tools": [
+    {
+      "name": "get_employees",
+      "description": "Busca colaboradores ativos com base em filtros: centro de custo, cargo, unidade organizacional, estabelecimento, faixa salarial ou lista de nomes/matrículas. Retorna lista com dados de cada colaborador.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "cost_center": { "type": "string", "description": "Código do centro de custo" },
+          "role": { "type": "string", "description": "Nome ou código do cargo" },
+          "department": { "type": "string", "description": "Nome do departamento ou UO" },
+          "establishment": { "type": "string", "description": "Código ou nome do estabelecimento" },
+          "salary_lt": { "type": "number", "description": "Filtra colaboradores com salário menor que este valor" },
+          "salary_gt": { "type": "number", "description": "Filtra colaboradores com salário maior que este valor" },
+          "employee_ids": { "type": "array", "items": { "type": "string" }, "description": "Lista de matrículas específicas" },
+          "names": { "type": "array", "items": { "type": "string" }, "description": "Lista de nomes parciais para busca" },
+          "exclude_on_leave_gt_days": { "type": "number", "description": "Exclui colaboradores afastados há mais de N dias" }
+        }
+      }
+    },
+    {
+      "name": "get_salary_table",
+      "description": "Retorna a tabela salarial associada a um cargo, incluindo faixas mínima, média e máxima e todos os níveis da carreira.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "role_code": { "type": "string", "description": "Código do cargo destino" },
+          "cost_center": { "type": "string", "description": "Centro de custo (usado para identificar a tabela correta)" }
+        },
+        "required": ["role_code"]
+      }
+    },
+    {
+      "name": "get_movement_policy",
+      "description": "Retorna a política salarial para um tipo de movimentação: percentual máximo permitido e se é bloqueante ou apenas alerta.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "movement_type": {
+            "type": "string",
+            "enum": ["MERIT", "PROMOTION_SIMPLE", "PROMOTION_DOUBLE", "PROMOTION_TRIPLE", "LATERAL_TRANSFER", "TRANSFER_WITH_RAISE", "TEMP_TRANSFER", "BACKFILL", "HEADCOUNT_INCREASE"],
+            "description": "Tipo de movimentação"
+          }
+        },
+        "required": ["movement_type"]
+      }
+    },
+    {
+      "name": "check_position",
+      "description": "Verifica se existe posição disponível (aberta, 1:1) para um cargo em um centro de custo. Retorna posições encontradas e recomendação.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "role_code": { "type": "string", "description": "Código do cargo" },
+          "cost_center": { "type": "string", "description": "Centro de custo" },
+          "status_filter": {
+            "type": "string",
+            "enum": ["OPEN", "OCCUPIED", "ANY"],
+            "description": "Filtro de status da posição"
+          }
+        },
+        "required": ["role_code", "cost_center"]
+      }
+    },
+    {
+      "name": "create_position",
+      "description": "Cria uma nova posição 1:1 no quadro de vagas para um cargo e centro de custo.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "role_code": { "type": "string" },
+          "cost_center": { "type": "string" },
+          "department": { "type": "string" },
+          "salary_table_id": { "type": "string" },
+          "headcount_type": { "type": "string", "enum": ["STRUCTURAL", "PROJECT"] },
+          "headcount_end_date": { "type": "string", "description": "Obrigatório se PROJECT" },
+          "linked_movement_id": { "type": "string" },
+          "rs_requisition_id": { "type": "string" },
+          "justification": { "type": "string" }
+        },
+        "required": ["role_code", "cost_center", "department", "justification"]
+      }
+    },
+    {
+      "name": "submit_movement",
+      "description": "Abre um processo de movimentação individual no Gen.te Flui. Deve ser chamada uma vez por colaborador. Valida política salarial e retorna process_id.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "employee_id": { "type": "string" },
+          "movement_type": {
+            "type": "string",
+            "enum": ["MERIT", "PROMOTION_SIMPLE", "PROMOTION_DOUBLE", "PROMOTION_TRIPLE", "LATERAL_TRANSFER", "TRANSFER_WITH_RAISE", "TEMP_TRANSFER", "BACKFILL", "HEADCOUNT_INCREASE"]
+          },
+          "target_position_id": { "type": "string", "description": "null se criar nova posição" },
+          "target_cost_center": { "type": "string" },
+          "target_department": { "type": "string" },
+          "proposed_salary": { "type": "number", "description": "null se sem ajuste salarial" },
+          "effective_date": { "type": "string", "description": "Formato YYYY-MM-DD" },
+          "justification": { "type": "string", "description": "Mínimo 20 caracteres" },
+          "rs_flag": { "type": "boolean", "description": "true = origem em processo seletivo interno" },
+          "rs_requisition_id": { "type": "string", "description": "Obrigatório se rs_flag = true" },
+          "temp_transfer_end_date": { "type": "string", "description": "Obrigatório se TEMP_TRANSFER" }
+        },
+        "required": ["employee_id", "movement_type", "effective_date", "justification"]
+      }
+    },
+    {
+      "name": "list_pending_approvals",
+      "description": "Lista movimentações pendentes de aprovação para o usuário atual. Retorna resumo por status (sem alertas, com alerta, com erro) e impacto orçamentário consolidado.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "approver_id": { "type": "string", "description": "ID do aprovador atual" },
+          "cost_center": { "type": "string", "description": "Filtro opcional por CC" },
+          "cycle": { "type": "string", "description": "Filtro opcional por ciclo, ex: FEV-2025" },
+          "status_filter": {
+            "type": "string",
+            "enum": ["PENDING_APPROVAL", "ERROR", "ALL"],
+            "description": "Filtro de status"
+          }
+        }
+      }
+    },
+    {
+      "name": "approve_movement",
+      "description": "Aprova um processo de movimentação individual. Para aprovação em massa, chamar em loop para cada process_id.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "process_id": { "type": "string" },
+          "approver_id": { "type": "string" },
+          "comment": { "type": "string", "description": "Comentário opcional do aprovador" }
+        },
+        "required": ["process_id", "approver_id"]
+      }
+    },
+    {
+      "name": "reject_movement",
+      "description": "Devolve um processo de movimentação ao solicitante com motivo. O Gen.te Flui notifica o solicitante automaticamente.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "process_id": { "type": "string" },
+          "approver_id": { "type": "string" },
+          "reason": { "type": "string", "description": "Motivo da devolução — obrigatório" }
+        },
+        "required": ["process_id", "approver_id", "reason"]
+      }
+    },
+    {
+      "name": "open_vacancy",
+      "description": "Abre uma vaga de substituição quando uma movimentação gera uma posição em aberto. Cria a posição e adiciona ao Quadro de Vagas.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "original_position_id": { "type": "string", "description": "Posição que ficou vaga" },
+          "employee_id": { "type": "string", "description": "Colaborador que saiu da posição" },
+          "movement_process_id": { "type": "string", "description": "Processo de movimentação que gerou a vaga" },
+          "justification": { "type": "string" }
+        },
+        "required": ["original_position_id", "employee_id", "justification"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+# Mova — Agente Conversacional de Movimentação de Pessoal
+## Contexto do Projeto
+
+### Problema Central
+Movimentações de colaboradores exigem manuseio de múltiplas telas, sem visibilidade do impacto orçamentário e sem integração com abertura de vagas. Dois clientes da LG lugar de gente — Hapvida Notre Dame Intermédica e Deloitte — solicitaram customizações independentes com necessidades similares que foram compiladas em uma solução única.
+
+| Dimensão | Hapvida | Deloitte |
+|---|---|---|
+| Movimentações em massa | ~2.000/mês, manuais | Ciclos de mérito em fev/ago |
+| Impacto orçamentário | Invisível — posições 1:N geram erros | Consultado manualmente por CC |
+| Posições desatualizadas | N posições para 1 cargo = retrabalho | Tabela salarial não vinculada ao CC |
+| Recrutamento desconectado | Abertura de vaga fora do fluxo | Transferência temporária sem evento de folha |
+| Aprovações | Sem aprovação em massa estruturada | Múltiplos níveis sem rastreabilidade |
+
+---
+
+## O que é o Mova
+
+Agente conversacional que orquestra movimentações encadeadas — posição, orçamento e recrutamento — em uma única experiência de chat, sem navegar em múltiplas telas.
+
+O gestor ou BP de RH escreve em linguagem natural:
+> "dá 8% de mérito para todos os Analistas do CC 0450"
+
+O agente interpreta, busca os colaboradores, valida a política salarial, calcula o impacto no custo do departamento e submete os processos.
+
+---
+
+## Arquitetura
+
+```
+Gestor / BP de RH
+  ↓ mensagem de texto natural
+Interface de Chat (front simples)
+  ↓ prompt + contexto
+Agente Mova (API Anthropic claude-sonnet-4-20250514)
+  ↓ tool calls
+Tools (mock data em JSON)
+  ↓ resultados
+Resposta estruturada → Interface → Usuário
+```
+
+### Decisão arquitetural importante
+O Mova NÃO usa grid coletivo. Cada movimentação é submetida como processo individual (um submit por colaborador). Isso elimina o limite técnico de 50 itens e simplifica a integração futura com a Ligia Pro.
+
+---
+
+## Tools disponíveis (10)
+
+| Tool | O que faz |
+|---|---|
+| `get_employees` | Busca colaboradores por CC, cargo, UO, faixa salarial ou lista |
+| `get_salary_table` | Retorna faixas e níveis da tabela pelo cargo destino |
+| `get_movement_policy` | Retorna % máximo por tipo de movimentação |
+| `check_position` | Verifica posição 1:1 aberta para cargo no CC |
+| `create_position` | Cria posição 1:1 e adiciona ao Quadro de Vagas |
+| `submit_movement` | Abre processo individual — 1 call por colaborador |
+| `list_pending_approvals` | Lista processos pendentes com resumo por status |
+| `approve_movement` | Aprova processo individual (chamar em loop) |
+| `reject_movement` | Devolve processo ao solicitante com motivo |
+| `open_vacancy` | Abre vaga de substituição |
+
+---
+
+## Tipos de Movimentação Suportados
+
+- `MERIT` — Mérito (aumento salarial por desempenho)
+- `PROMOTION_SIMPLE` — Promoção simples (1 nível)
+- `PROMOTION_DOUBLE` — Promoção dupla (2 níveis)
+- `PROMOTION_TRIPLE` — Promoção tripla (3 níveis)
+- `LATERAL_TRANSFER` — Transferência lateral (sem ajuste salarial)
+- `TRANSFER_WITH_RAISE` — Transferência com aumento salarial
+- `TEMP_TRANSFER` — Transferência temporária com eventos de folha
+- `BACKFILL` — Substituição de colaborador
+- `HEADCOUNT_INCREASE` — Aumento de quadro
+
+---
+
+## Seleção de colaboradores (linguagem natural → filtros)
+
+| Instrução do gestor | Filtros usados |
+|---|---|
+| "todos os Analistas do CC 0450" | current_role + cost_center |
+| "toda a equipe de Logística" | department |
+| "Coordenadores da UO Vendas no Estab SP" | current_role + department + establishment |
+| "quem ganha menos de R$ 5.000" | salary_lt |
+| "Maria Silva, Carlos Mendes" | names[] ou employee_ids[] |
+
+---
+
+## Política Salarial (validação automática)
+
+| Tipo de Movimentação | % Máximo | Comportamento |
+|---|---|---|
+| Mérito | 8% | Alerta se ultrapassar — não bloqueante |
+| Promoção Simples | 20% | Alerta se ultrapassar — não bloqueante |
+| Promoção Dupla | 35% | Alerta se ultrapassar — não bloqueante |
+| Promoção Tripla | 50% | Alerta se ultrapassar — não bloqueante |
+| Transferência com Aumento | 15% | Alerta se ultrapassar — não bloqueante |
+
+---
+
+## Cálculo de Impacto no Custo
+
+O agente NÃO acessa módulo de orçamento real. Calcula pela folha:
+
+```
+custo_dept   = SUM(salary) WHERE cost_center = X AND status = ATIVO
+delta_mensal = SUM(salario_proposto) - SUM(salario_atual)
+delta_anual  = delta_mensal × 12
+```
+
+Afastados há mais de 15 dias são excluídos do impacto consolidado.
+
+---
+
+## Status de Aprovação
+
+| Status | Significado | Ação sugerida |
+|---|---|---|
+| ✅ sem alertas | Dentro da política salarial | Aprovação direta |
+| ⚠️ com alerta | Acima do ponto médio ou alerta informativo | Aprovador decide |
+| ❌ com erro | Dado faltando ou erro de validação | Não pode ser aprovado |
+
+---
+
+## Dados
+
+Todos os dados são mockados em `mock_data.json`. Para produção: substituir cada `get_*` por chamada real à API LG correspondente, mantendo o mesmo contrato de input/output.
+
+| Entidade | Chave no mock_data.json |
+|---|---|
+| Colaboradores ativos | `employees` |
+| Posições e vagas | `positions` |
+| Tabelas salariais | `salary_tables` |
+| Políticas de movimentação | `movement_policies` |
+| Aprovadores por CC | `workflow_approvers` |
+| Processos pendentes | `pending_movements` |
+
+---
+
+## Stack sugerida
+
+- **Backend/Agente:** Node.js ou Python — chamadas à API Anthropic
+- **Front:** HTML + JS puro (chat simples) ou Next.js
+- **Dados:** mock_data.json carregado em memória
+- **Deploy:** Vercel (gratuito) ou ZIP local para demo
+
+## Arquivos do projeto
+
+```
+/mova
+  CONTEXT.md            ← este arquivo
+  mock_data.json        ← dados mockados
+  mova_manifest.json    ← definição das tools
+  /src
+    agent.js            ← lógica do agente + API Anthropic
+    tools.js            ← implementação das 10 tools
+    index.html          ← interface de chat
+```
+
+---
+
+## Contexto do Hackathon
+
+- Dados podem ser 100% fictícios (mockados) — isso é esperado e aceitável
+- O agente precisa funcionar isoladamente antes de qualquer integração
+- Integração com Ligia Pro ocorre no Checkpoint 3 (etapa posterior)
+- O que será avaliado: agente respondendo corretamente, executando ações esperadas, demonstrando claramente qual problema resolve

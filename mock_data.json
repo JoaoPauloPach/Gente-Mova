@@ -1,0 +1,403 @@
+{
+  "employees": [
+    {
+      "id": "10234",
+      "name": "Maria Silva",
+      "cost_center": "0450",
+      "department": "Tecnologia",
+      "establishment": "SP",
+      "organizational_unit": "TI Corporativo",
+      "role": "Analista Sr",
+      "role_code": "ANSR",
+      "salary": 7180,
+      "status": "ACTIVE",
+      "on_leave_since": null,
+      "on_leave_days": 0,
+      "performance_score": 4.2,
+      "last_movement_date": "2024-03-01",
+      "hire_date": "2021-06-15",
+      "manager_id": "10789"
+    },
+    {
+      "id": "10501",
+      "name": "Carlos Mendes",
+      "cost_center": "0301",
+      "department": "Operações",
+      "establishment": "RJ",
+      "organizational_unit": "Logística",
+      "role": "Coordenador",
+      "role_code": "COORD",
+      "salary": 9200,
+      "status": "ACTIVE",
+      "on_leave_since": "2025-01-10",
+      "on_leave_days": 86,
+      "performance_score": 3.8,
+      "last_movement_date": "2023-08-01",
+      "hire_date": "2019-02-20",
+      "manager_id": "10900"
+    },
+    {
+      "id": "10789",
+      "name": "Ana Lima",
+      "cost_center": "0450",
+      "department": "Tecnologia",
+      "establishment": "SP",
+      "organizational_unit": "TI Corporativo",
+      "role": "Gerente",
+      "role_code": "GER",
+      "salary": 14500,
+      "status": "ACTIVE",
+      "on_leave_since": null,
+      "on_leave_days": 0,
+      "performance_score": 4.8,
+      "last_movement_date": "2024-01-01",
+      "hire_date": "2018-05-10",
+      "manager_id": "10999"
+    },
+    {
+      "id": "10310",
+      "name": "Fernanda Costa",
+      "cost_center": "0450",
+      "department": "Tecnologia",
+      "establishment": "SP",
+      "organizational_unit": "TI Corporativo",
+      "role": "Analista Jr",
+      "role_code": "ANJR",
+      "salary": 4200,
+      "status": "ACTIVE",
+      "on_leave_since": null,
+      "on_leave_days": 0,
+      "performance_score": 3.5,
+      "last_movement_date": "2024-06-01",
+      "hire_date": "2023-01-10",
+      "manager_id": "10789"
+    },
+    {
+      "id": "10412",
+      "name": "Roberto Alves",
+      "cost_center": "0450",
+      "department": "Tecnologia",
+      "establishment": "SP",
+      "organizational_unit": "TI Corporativo",
+      "role": "Analista Pl",
+      "role_code": "ANPL",
+      "salary": 5900,
+      "status": "ACTIVE",
+      "on_leave_since": null,
+      "on_leave_days": 0,
+      "performance_score": 4.0,
+      "last_movement_date": "2023-08-01",
+      "hire_date": "2020-09-05",
+      "manager_id": "10789"
+    },
+    {
+      "id": "10620",
+      "name": "Juliana Martins",
+      "cost_center": "0301",
+      "department": "Operações",
+      "establishment": "RJ",
+      "organizational_unit": "Logística",
+      "role": "Analista Sr",
+      "role_code": "ANSR",
+      "salary": 6800,
+      "status": "ACTIVE",
+      "on_leave_since": null,
+      "on_leave_days": 0,
+      "performance_score": 4.5,
+      "last_movement_date": "2024-02-01",
+      "hire_date": "2020-03-15",
+      "manager_id": "10900"
+    },
+    {
+      "id": "10900",
+      "name": "Pedro Souza",
+      "cost_center": "0301",
+      "department": "Operações",
+      "establishment": "RJ",
+      "organizational_unit": "Logística",
+      "role": "Diretor",
+      "role_code": "DIR",
+      "salary": 22000,
+      "status": "ACTIVE",
+      "on_leave_since": null,
+      "on_leave_days": 0,
+      "performance_score": 4.6,
+      "last_movement_date": "2022-01-01",
+      "hire_date": "2015-07-01",
+      "manager_id": "10999"
+    },
+    {
+      "id": "10999",
+      "name": "Sandra Rocha",
+      "cost_center": "0100",
+      "department": "RH",
+      "establishment": "SP",
+      "organizational_unit": "Recursos Humanos",
+      "role": "CHRO",
+      "role_code": "CHRO",
+      "salary": 35000,
+      "status": "ACTIVE",
+      "on_leave_since": null,
+      "on_leave_days": 0,
+      "performance_score": 4.9,
+      "last_movement_date": "2021-01-01",
+      "hire_date": "2012-03-01",
+      "manager_id": null
+    }
+  ],
+
+  "positions": [
+    {
+      "id": "POS-CC0450-0012",
+      "role": "Coordenador",
+      "role_code": "COORD",
+      "cost_center": "0450",
+      "department": "Tecnologia",
+      "status": "OPEN",
+      "is_1to1": true,
+      "current_occupant_id": null,
+      "salary_table_id": "TAB-TRAD-2",
+      "headcount_type": "STRUCTURAL"
+    },
+    {
+      "id": "POS-CC0301-0008",
+      "role": "Analista Sr",
+      "role_code": "ANSR",
+      "cost_center": "0301",
+      "department": "Operações",
+      "status": "OCCUPIED",
+      "is_1to1": false,
+      "current_occupant_id": "10620",
+      "current_vacancies": 3,
+      "salary_table_id": "TAB-TRAD-1",
+      "headcount_type": "STRUCTURAL"
+    },
+    {
+      "id": "POS-CC0450-0021",
+      "role": "Analista Sr",
+      "role_code": "ANSR",
+      "cost_center": "0450",
+      "department": "Tecnologia",
+      "status": "OCCUPIED",
+      "is_1to1": true,
+      "current_occupant_id": "10234",
+      "salary_table_id": "TAB-TRAD-1",
+      "headcount_type": "STRUCTURAL"
+    },
+    {
+      "id": "POS-CC0450-0035",
+      "role": "Gerente",
+      "role_code": "GER",
+      "cost_center": "0450",
+      "department": "Tecnologia",
+      "status": "OCCUPIED",
+      "is_1to1": true,
+      "current_occupant_id": "10789",
+      "salary_table_id": "TAB-TRAD-3",
+      "headcount_type": "STRUCTURAL"
+    },
+    {
+      "id": "POS-CC0450-0041",
+      "role": "Analista Pl",
+      "role_code": "ANPL",
+      "cost_center": "0450",
+      "department": "Tecnologia",
+      "status": "OPEN",
+      "is_1to1": true,
+      "current_occupant_id": null,
+      "salary_table_id": "TAB-TRAD-1",
+      "headcount_type": "STRUCTURAL"
+    }
+  ],
+
+  "salary_tables": [
+    {
+      "id": "TAB-TRAD-1",
+      "career": "TRADICIONAL",
+      "levels": [
+        { "role": "Analista Jr", "role_code": "ANJR", "band_min": 3500, "band_mid": 4500, "band_max": 5500 },
+        { "role": "Analista Pl", "role_code": "ANPL", "band_min": 5000, "band_mid": 6500, "band_max": 8000 },
+        { "role": "Analista Sr", "role_code": "ANSR", "band_min": 6500, "band_mid": 8000, "band_max": 10000 },
+        { "role": "Especialista", "role_code": "ESP", "band_min": 9000, "band_mid": 11000, "band_max": 14000 }
+      ]
+    },
+    {
+      "id": "TAB-TRAD-2",
+      "career": "TRADICIONAL",
+      "levels": [
+        { "role": "Coordenador", "role_code": "COORD", "band_min": 7000, "band_mid": 9000, "band_max": 12000 },
+        { "role": "Gerente", "role_code": "GER", "band_min": 11000, "band_mid": 15000, "band_max": 20000 },
+        { "role": "Diretor", "role_code": "DIR", "band_min": 18000, "band_mid": 25000, "band_max": 35000 }
+      ]
+    },
+    {
+      "id": "TAB-TRAD-3",
+      "career": "TRADICIONAL",
+      "levels": [
+        { "role": "Gerente", "role_code": "GER", "band_min": 12000, "band_mid": 16000, "band_max": 22000 }
+      ]
+    }
+  ],
+
+  "movement_policies": [
+    {
+      "movement_type": "MERIT",
+      "max_percentage": 8,
+      "blocking": false,
+      "description": "Mérito — máximo de 8% sobre salário atual"
+    },
+    {
+      "movement_type": "PROMOTION_SIMPLE",
+      "max_percentage": 20,
+      "blocking": false,
+      "description": "Promoção simples (1 nível) — máximo de 20%"
+    },
+    {
+      "movement_type": "PROMOTION_DOUBLE",
+      "max_percentage": 35,
+      "blocking": false,
+      "description": "Promoção dupla (2 níveis) — máximo de 35%"
+    },
+    {
+      "movement_type": "PROMOTION_TRIPLE",
+      "max_percentage": 50,
+      "blocking": false,
+      "description": "Promoção tripla (3 níveis) — máximo de 50%"
+    },
+    {
+      "movement_type": "LATERAL_TRANSFER",
+      "max_percentage": 0,
+      "blocking": true,
+      "description": "Transferência lateral — sem ajuste salarial permitido"
+    },
+    {
+      "movement_type": "TRANSFER_WITH_RAISE",
+      "max_percentage": 15,
+      "blocking": false,
+      "description": "Transferência com aumento — máximo de 15%"
+    }
+  ],
+
+  "workflow_approvers": [
+    {
+      "cost_center": "0450",
+      "approvers": [
+        { "user_id": "BP-0021", "name": "Camila Ramos", "role": "HR_BP", "level": 1 },
+        { "user_id": "FIN-0003", "name": "Marcos Teixeira", "role": "FINANCIAL", "level": 2 }
+      ]
+    },
+    {
+      "cost_center": "0301",
+      "approvers": [
+        { "user_id": "BP-0014", "name": "Luciana Faria", "role": "HR_BP", "level": 1 },
+        { "user_id": "FIN-0003", "name": "Marcos Teixeira", "role": "FINANCIAL", "level": 2 }
+      ]
+    }
+  ],
+
+  "pending_movements": [
+    {
+      "process_id": "WF-2025-04880",
+      "employee_id": "10234",
+      "employee_name": "Maria Silva",
+      "movement_type": "PROMOTION_SIMPLE",
+      "current_salary": 7180,
+      "proposed_salary": 8500,
+      "increase_percentage": 18.3,
+      "cost_center": "0450",
+      "status": "PENDING_APPROVAL",
+      "approver_id": "BP-0021",
+      "cycle": "FEV-2025",
+      "policy_alert": false,
+      "effective_date": "2025-04-01",
+      "submitted_by": "10789",
+      "submitted_at": "2025-03-28"
+    },
+    {
+      "process_id": "WF-2025-04881",
+      "employee_id": "10412",
+      "employee_name": "Roberto Alves",
+      "movement_type": "MERIT",
+      "current_salary": 5900,
+      "proposed_salary": 6372,
+      "increase_percentage": 8.0,
+      "cost_center": "0450",
+      "status": "PENDING_APPROVAL",
+      "approver_id": "BP-0021",
+      "cycle": "FEV-2025",
+      "policy_alert": false,
+      "effective_date": "2025-04-01",
+      "submitted_by": "10789",
+      "submitted_at": "2025-03-28"
+    },
+    {
+      "process_id": "WF-2025-04882",
+      "employee_id": "10310",
+      "employee_name": "Fernanda Costa",
+      "movement_type": "MERIT",
+      "current_salary": 4200,
+      "proposed_salary": 4620,
+      "increase_percentage": 10.0,
+      "cost_center": "0450",
+      "status": "PENDING_APPROVAL",
+      "approver_id": "BP-0021",
+      "cycle": "FEV-2025",
+      "policy_alert": true,
+      "policy_alert_message": "Percentual de 10% acima do limite de 8% para Mérito",
+      "effective_date": "2025-04-01",
+      "submitted_by": "10789",
+      "submitted_at": "2025-03-29"
+    },
+    {
+      "process_id": "WF-2025-04883",
+      "employee_id": "10620",
+      "employee_name": "Juliana Martins",
+      "movement_type": "PROMOTION_SIMPLE",
+      "current_salary": 6800,
+      "proposed_salary": 0,
+      "increase_percentage": null,
+      "cost_center": "0301",
+      "status": "ERROR",
+      "approver_id": "BP-0014",
+      "cycle": "FEV-2025",
+      "policy_alert": false,
+      "error_message": "Salário proposto não informado. Aguardando correção do solicitante.",
+      "effective_date": "2025-04-01",
+      "submitted_by": "10900",
+      "submitted_at": "2025-03-29"
+    }
+  ],
+
+  "rs_requisitions": [
+    {
+      "id": "RS-2025-0234",
+      "title": "Coordenador de TI",
+      "status": "APPROVED",
+      "cost_center": "0450",
+      "department": "Tecnologia",
+      "role_code": "COORD",
+      "linked_position_id": null,
+      "opened_at": "2025-03-01"
+    },
+    {
+      "id": "RS-2025-0198",
+      "title": "Analista Sr de Operações",
+      "status": "APPROVED",
+      "cost_center": "0301",
+      "department": "Operações",
+      "role_code": "ANSR",
+      "linked_position_id": "POS-CC0301-0008",
+      "opened_at": "2025-02-15"
+    }
+  ],
+
+  "budget": [
+    { "employee_id": "10234", "cost_center": "0450", "annual_budget": 90000, "monthly_reference": 7500 },
+    { "employee_id": "10412", "cost_center": "0450", "annual_budget": 72000, "monthly_reference": 6000 },
+    { "employee_id": "10310", "cost_center": "0450", "annual_budget": 52800, "monthly_reference": 4400 },
+    { "employee_id": "10789", "cost_center": "0450", "annual_budget": 180000, "monthly_reference": 15000 },
+    { "employee_id": "10620", "cost_center": "0301", "annual_budget": 84000, "monthly_reference": 7000 },
+    { "employee_id": "10501", "cost_center": "0301", "annual_budget": 115200, "monthly_reference": 9600 },
+    { "employee_id": "10900", "cost_center": "0301", "annual_budget": 276000, "monthly_reference": 23000 }
+  ]
+}
